@@ -2,7 +2,7 @@ import WebGLUtils from '../common/WebGLUtils';
 import vertexShaderSource from './vertex.glsl?raw';
 import fragmentShaderSource from './fragment.glsl?raw';
 import Torus from './Torus';
-import { matIV } from '../common/minMatrix';
+import * as matIV from '../common/minMatrix';
 
 export default class Index {
   constructor(canvasElement) {
@@ -11,16 +11,15 @@ export default class Index {
     this.gl = this.webGLUtils.gl;
     this.program = null;
 
-    this.time = 0; 
-    this.torus = new Torus(32, 32, 1.0, 2.0)
+    this.time = 0;
+    this.torus = new Torus(2.0, 1, 32, 32, 2*Math.PI);
     console.log(this.torus);
 
-    this.matrix = new matIV();
-    this.mMatrix = this.matrix.identity(this.matrix.create());
-    this.vMatrix = this.matrix.identity(this.matrix.create());
-    this.pMatrix = this.matrix.identity(this.matrix.create());
-    this.tmpMatrix = this.matrix.identity(this.matrix.create());
-    this.mvpMatrix = this.matrix.identity(this.matrix.create());
+    this.mMatrix = matIV.createMatrix();
+    this.vMatrix = matIV.createMatrix();
+    this.pMatrix = matIV.createMatrix();
+    this.tmpMatrix = matIV.createMatrix();
+    this.mvpMatrix = matIV.createMatrix();
   
     this.vbo = [];
     this.attLocation = [];
@@ -69,9 +68,9 @@ export default class Index {
   }
 
   setMatrixes() {
-    this.matrix.lookAt([0.0, 0.0, 20.0], [0, 0, 0], [0, 1, 0], this.vMatrix);
-	  this.matrix.perspective(45, this.canvas.width / this.canvas.height, 0.1, 100, this.pMatrix);
-	  this.matrix.multiply(this.pMatrix, this.vMatrix, this.tmpMatrix);
+    matIV.lookAt([0.0, 0.0, 20.0], [0, 0, 0], [0, 1, 0], this.vMatrix);
+	  matIV.perspective(45, this.canvas.width / this.canvas.height, 0.1, 100, this.pMatrix);
+	  matIV.multiply(this.pMatrix, this.vMatrix, this.tmpMatrix);
   }
 
   setData() {
@@ -119,9 +118,9 @@ export default class Index {
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     const rad = this.time * Math.PI;
-    this.matrix.identity(this.mMatrix);
-		this.matrix.rotate(this.mMatrix, rad, [0, 1, 1], this.mMatrix);
-		this.matrix.multiply(this.tmpMatrix, this.mMatrix, this.mvpMatrix);
+    matIV.identity(this.mMatrix);
+		matIV.rotate(this.mMatrix, rad, [0, 1, 1], this.mMatrix);
+		matIV.multiply(this.tmpMatrix, this.mMatrix, this.mvpMatrix);
     // this.gl.uniformMatrix4fv(uniLocation[0], false, mvpMatrix);
     this.gl.uniformMatrix4fv(this.uniLocation[1], false, this.mvpMatrix);
 		gl.drawElements(gl.TRIANGLES, this.torus.indices.length, gl.UNSIGNED_SHORT, 0);
