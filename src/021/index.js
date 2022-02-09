@@ -29,7 +29,8 @@ export default class Index {
     this.uniLocation = [];
     this.uniType = [];
 
-    this.lightDirection = [-0.5, 0.5, 0.5];
+    // this.lightDirection = [-0.5, 0.5, 0.5];
+    this.lightDirection = [1, 0, 0];
   }
 
   createProgram() {
@@ -70,7 +71,13 @@ export default class Index {
     this.uniLocation.push(gl.getUniformLocation(this.program, 'time'));
     this.uniType.push('uniform1f');
 
-    this.uniLocation.push(gl.getUniformLocation(this.program, 'mvpMatrix'));
+    this.uniLocation.push(gl.getUniformLocation(this.program, 'modelMatrix'));
+    this.uniType.push(null); // matrix4fvのため。
+
+    this.uniLocation.push(gl.getUniformLocation(this.program, 'viewMatrix'));
+    this.uniType.push(null); // matrix4fvのため。
+
+    this.uniLocation.push(gl.getUniformLocation(this.program, 'projectionMatrix'));
     this.uniType.push(null); // matrix4fvのため。
 
     this.uniLocation.push(gl.getUniformLocation(this.program, 'invMatrix'));
@@ -121,7 +128,7 @@ export default class Index {
   // }
 
   render() {
-    const speed = 0.1;
+    const speed = 0.4;
     const gl = this.gl;
     const utils = this.webGLUtils;
     const deltaTime = utils.getDeltaTime();
@@ -137,9 +144,11 @@ export default class Index {
 		matIV.multiply(this.tmpMatrix, this.mMatrix, this.mvpMatrix);
 		matIV.inverse(this.mMatrix, this.invMatrix);
     // this.gl.uniformMatrix4fv(uniLocation[0], false, mvpMatrix);
-    this.gl.uniformMatrix4fv(this.uniLocation[1], false, this.mvpMatrix);
-    this.gl.uniformMatrix4fv(this.uniLocation[2], false, this.invMatrix);
-    this.gl.uniform3fv(this.uniLocation[3], this.lightDirection);
+    this.gl.uniformMatrix4fv(this.uniLocation[1], false, this.mMatrix);
+    this.gl.uniformMatrix4fv(this.uniLocation[2], false, this.vMatrix);
+    this.gl.uniformMatrix4fv(this.uniLocation[3], false, this.pMatrix);
+    this.gl.uniformMatrix4fv(this.uniLocation[4], false, this.invMatrix);
+    this.gl.uniform3fv(this.uniLocation[5], this.lightDirection);
 		gl.drawElements(gl.TRIANGLES, this.torus.indices.length, gl.UNSIGNED_SHORT, 0);
   }
 

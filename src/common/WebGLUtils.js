@@ -31,8 +31,7 @@ export default class WebGLUtils {
     if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
       return shader;
     } else {
-      alert(gl.getShaderInfoLog(shader));
-      return null;
+      throw new Error(gl.getShaderInfoLog(shader));
     }
   }
 
@@ -54,8 +53,7 @@ export default class WebGLUtils {
       gl.useProgram(program);
       return program;
     } else {
-      alert(gl.getProgramInfoLog(program));
-      return null;
+      throw new Error(gl.getProgramInfoLog(program));
     }
   }
 
