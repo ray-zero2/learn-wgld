@@ -6,6 +6,7 @@ export default class Torus {
     this.colors = [];
     this.indices = [];
 		this.uvs = [];
+		this.normals = [];
 
     this.createGeometry(radius, tube, radialSegments, tubularSegments, arc);
   }
@@ -27,6 +28,12 @@ export default class Torus {
 
 				this.uvs.push( j / tubularSegments ); // uv.x
 				this.uvs.push( i / radialSegments ); // uv.y
+
+				const toTubeCenter = [ radius * Math.cos(u), radius* Math.sin(u), 0 ];
+				const normals = [ pipeX - toTubeCenter[0], pipeY - toTubeCenter[1], pipeZ - toTubeCenter[2] ];
+				const length = Math.hypot(normals[0], normals[1], normals[2]) || 1;
+				const normalizedNormals = normals.map(value => value/length);
+				this.normals.push(...normalizedNormals);
 			}
 		}
 

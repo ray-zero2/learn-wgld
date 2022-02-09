@@ -20,6 +20,7 @@ export default class Index {
     this.pMatrix = matIV.createMatrix();
     this.tmpMatrix = matIV.createMatrix();
     this.mvpMatrix = matIV.createMatrix();
+    this.invMatrix = matIV.createMatrix();
   
     this.vbo = [];
     this.attLocation = [];
@@ -28,6 +29,7 @@ export default class Index {
     this.uniLocation = [];
     this.uniType = [];
 
+    this.lightDirection = [-0.5, 0.5, 0.5];
   }
 
   createProgram() {
@@ -52,6 +54,11 @@ export default class Index {
     this.attLocation.push(gl.getAttribLocation(this.program, 'color'));
     this.attStride.push(4);
 
+    // normals
+    this.vbo.push(utils.createVbo(new Float32Array(this.torus.normals), gl.STATIC_DRAW));
+    this.attLocation.push(gl.getAttribLocation(this.program, 'normals'));
+    this.attStride.push(3);
+
     // ibo
     this.ibo = this.webGLUtils.createIbo(this.torus.indices);
     this.webGLUtils.setAttribute(this.vbo, this.attLocation, this.attStride, this.ibo);
@@ -65,6 +72,12 @@ export default class Index {
 
     this.uniLocation.push(gl.getUniformLocation(this.program, 'mvpMatrix'));
     this.uniType.push(null); // matrix4fvのため。
+
+    this.uniLocation.push(gl.getUniformLocation(this.program, 'invMatrix'));
+    this.uniType.push(null);
+
+    this.uniLocation.push(gl.getUniformLocation(this.program, 'lightDirection'));
+    this.uniType.push(null);
   }
 
   setMatrixes() {
@@ -108,6 +121,7 @@ export default class Index {
   // }
 
   render() {
+    const speed = 0.1;
     const gl = this.gl;
     const utils = this.webGLUtils;
     const deltaTime = utils.getDeltaTime();
@@ -117,12 +131,15 @@ export default class Index {
 		gl.clearDepth(1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    const rad = this.time * Math.PI;
+    const rad = this.time * speed * Math.PI;
     matIV.identity(this.mMatrix);
 		matIV.rotate(this.mMatrix, rad, [0, 1, 1], this.mMatrix);
 		matIV.multiply(this.tmpMatrix, this.mMatrix, this.mvpMatrix);
+		matIV.inverse(this.mMatrix, this.invMatrix);
     // this.gl.uniformMatrix4fv(uniLocation[0], false, mvpMatrix);
     this.gl.uniformMatrix4fv(this.uniLocation[1], false, this.mvpMatrix);
+    this.gl.uniformMatrix4fv(this.uniLocation[2], false, this.invMatrix);
+    this.gl.uniform3fv(this.uniLocation[3], this.lightDirection);
 		gl.drawElements(gl.TRIANGLES, this.torus.indices.length, gl.UNSIGNED_SHORT, 0);
   }
 
