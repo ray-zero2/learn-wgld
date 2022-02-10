@@ -12,7 +12,7 @@ void main(void){
     // vec3  invLight = normalize(invMatrix * vec4(lightDirection, 0.0)).xyz;
 		vec3 light = normalize(lightDirection);
 		vec4 mPosition = modelMatrix * vec4(position, 1.);
-		vec4 mNormal = modelMatrix * vec4(normals, 0.);
+		vec4 mNormal = normalize(modelMatrix * vec4(normals, 0.));
     float diffuse  = clamp(dot(mNormal.xyz, light), 0.1, 1.0);
     vColor         = color * vec4(vec3(diffuse), 1.0);
     gl_Position    = projectionMatrix * viewMatrix * mPosition;

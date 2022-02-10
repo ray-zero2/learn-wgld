@@ -29,8 +29,7 @@ export default class Index {
     this.uniLocation = [];
     this.uniType = [];
 
-    // this.lightDirection = [-0.5, 0.5, 0.5];
-    this.lightDirection = [1, 0, 0];
+    this.lightDirection = [-0.5, 0.5, 0.5];
   }
 
   createProgram() {
