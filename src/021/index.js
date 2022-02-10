@@ -29,6 +29,8 @@ export default class Index {
     this.uniLocation = [];
     this.uniType = [];
 
+    this.ambientColor = [0.1, 0.1, 0.1, 1.0];
+
     this.lightDirection = [-0.5, 0.5, 0.5];
   }
 
@@ -80,6 +82,9 @@ export default class Index {
     this.uniType.push(null); // matrix4fvのため。
 
     this.uniLocation.push(gl.getUniformLocation(this.program, 'invMatrix'));
+    this.uniType.push(null);
+
+    this.uniLocation.push(gl.getUniformLocation(this.program, 'ambientColor'));
     this.uniType.push(null);
 
     this.uniLocation.push(gl.getUniformLocation(this.program, 'lightDirection'));
@@ -147,7 +152,8 @@ export default class Index {
     this.gl.uniformMatrix4fv(this.uniLocation[2], false, this.vMatrix);
     this.gl.uniformMatrix4fv(this.uniLocation[3], false, this.pMatrix);
     this.gl.uniformMatrix4fv(this.uniLocation[4], false, this.invMatrix);
-    this.gl.uniform3fv(this.uniLocation[5], this.lightDirection);
+    this.gl.uniform4fv(this.uniLocation[5], this.ambientColor);
+    this.gl.uniform3fv(this.uniLocation[6], this.lightDirection);
 		gl.drawElements(gl.TRIANGLES, this.torus.indices.length, gl.UNSIGNED_SHORT, 0);
   }
 
