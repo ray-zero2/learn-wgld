@@ -1,4 +1,5 @@
 import {hsv2rgb} from '../common/hsv2rgb'
+import Vector3 from '../common/Vector3';
 
 export default class Torus {
   constructor(radius = 1, tube = 0.4, radialSegments = 8, tubularSegments = 6, arc = Math.PI * 2) {
@@ -21,7 +22,8 @@ export default class Torus {
 				const pipeX = distanceFromCenter * Math.cos(u);
 				const pipeY = distanceFromCenter * Math.sin(u);
 				const pipeZ = tube * Math.sin(v);
-				this.positions.push(pipeX, pipeY, pipeZ);
+				const pipeVec = new Vector3(pipeX, pipeY, pipeZ);
+				this.positions.push(...pipeVec.array);
 
 				const color = hsv2rgb(u * 180 / Math.PI, 1, 1, 1);
 				this.colors.push(color[0], color[1], color[2], color[3]);
@@ -29,11 +31,9 @@ export default class Torus {
 				this.uvs.push( j / tubularSegments ); // uv.x
 				this.uvs.push( i / radialSegments ); // uv.y
 
-				const toTubeCenter = [ radius * Math.cos(u), radius* Math.sin(u), 0 ];
-				const normals = [ pipeX - toTubeCenter[0], pipeY - toTubeCenter[1], pipeZ - toTubeCenter[2] ];
-				const length = Math.hypot(normals[0], normals[1], normals[2]) || 1;
-				const normalizedNormals = normals.map(value => value/length);
-				this.normals.push(...normalizedNormals);
+				const tubeCenterVec = new Vector3(radius * Math.cos(u), radius* Math.sin(u), 0);
+				const normals = pipeVec.subVector(tubeCenterVec).normalize();
+				this.normals.push(...normals.array);
 			}
 		}
 
