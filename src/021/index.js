@@ -3,6 +3,7 @@ import vertexShaderSource from './vertex.glsl?raw';
 import fragmentShaderSource from './fragment.glsl?raw';
 import Torus from './Torus';
 import * as matIV from '../common/minMatrix';
+import Vector3 from '../common/Vector3';
 
 export default class Index {
   constructor(canvasElement) {
@@ -13,7 +14,6 @@ export default class Index {
 
     this.time = 0;
     this.torus = new Torus(2.0, 1, 32, 32, 2*Math.PI);
-    console.log(this.torus);
 
     this.mMatrix = matIV.createMatrix();
     this.vMatrix = matIV.createMatrix();
@@ -21,7 +21,7 @@ export default class Index {
     this.tmpMatrix = matIV.createMatrix();
     this.mvpMatrix = matIV.createMatrix();
     this.invMatrix = matIV.createMatrix();
-  
+
     this.vbo = [];
     this.attLocation = [];
     this.attStride = [];
@@ -30,8 +30,13 @@ export default class Index {
     this.uniType = [];
 
     this.ambientColor = [0.1, 0.1, 0.1, 1.0];
+    this.cameraPosition = new Vector3(0.0, 0.0, 20.0);
+    this.lookAt = new Vector3(0, 0, 0);
 
-    this.lightDirection = [-0.5, 0.5, 0.5];
+    this.eyeDirection = this.cameraPosition.clone();
+    this.eyeDirection.normalize();
+
+    this.lightDirection = new Vector3(-0.5, 0.5, 0.5);
   }
 
   createProgram() {
@@ -87,12 +92,15 @@ export default class Index {
     this.uniLocation.push(gl.getUniformLocation(this.program, 'ambientColor'));
     this.uniType.push(null);
 
+    this.uniLocation.push(gl.getUniformLocation(this.program, 'eyeDirection'));
+    this.uniType.push(null);
+
     this.uniLocation.push(gl.getUniformLocation(this.program, 'lightDirection'));
     this.uniType.push(null);
   }
 
   setMatrixes() {
-    matIV.lookAt([0.0, 0.0, 20.0], [0, 0, 0], [0, 1, 0], this.vMatrix);
+    matIV.lookAt(this.cameraPosition.array, this.lookAt.array, [0, 1, 0], this.vMatrix);
 	  matIV.perspective(45, this.canvas.width / this.canvas.height, 0.1, 100, this.pMatrix);
 	  matIV.multiply(this.pMatrix, this.vMatrix, this.tmpMatrix);
   }
@@ -147,13 +155,15 @@ export default class Index {
 		matIV.rotate(this.mMatrix, rad, [0, 1, 1], this.mMatrix);
 		matIV.multiply(this.tmpMatrix, this.mMatrix, this.mvpMatrix);
 		matIV.inverse(this.mMatrix, this.invMatrix);
+
     // this.gl.uniformMatrix4fv(uniLocation[0], false, mvpMatrix);
     this.gl.uniformMatrix4fv(this.uniLocation[1], false, this.mMatrix);
     this.gl.uniformMatrix4fv(this.uniLocation[2], false, this.vMatrix);
     this.gl.uniformMatrix4fv(this.uniLocation[3], false, this.pMatrix);
     this.gl.uniformMatrix4fv(this.uniLocation[4], false, this.invMatrix);
     this.gl.uniform4fv(this.uniLocation[5], this.ambientColor);
-    this.gl.uniform3fv(this.uniLocation[6], this.lightDirection);
+    this.gl.uniform3fv(this.uniLocation[6], this.eyeDirection.array);
+    this.gl.uniform3fv(this.uniLocation[7], this.lightDirection.array);
 		gl.drawElements(gl.TRIANGLES, this.torus.indices.length, gl.UNSIGNED_SHORT, 0);
   }
 
