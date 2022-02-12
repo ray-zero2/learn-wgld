@@ -43,6 +43,7 @@ export default class Vector3 {
     this.x += vector3.x;
     this.y += vector3.y;
     this.z += vector3.z;
+    return this;
   }
 
   /**
@@ -52,6 +53,7 @@ export default class Vector3 {
     this.x += scalar;
     this.y += scalar;
     this.z += scalar;
+    return this;
   }
 
   /**
@@ -61,6 +63,7 @@ export default class Vector3 {
     this.x -= vector3.x;
     this.y -= vector3.y;
     this.z -= vector3.z;
+    return this;
   }
 
    /**
@@ -70,6 +73,7 @@ export default class Vector3 {
     this.x -= scalar;
     this.y -= scalar;
     this.z -= scalar;
+    return this;
   }
 
   /**
@@ -79,6 +83,7 @@ export default class Vector3 {
     this.x *= vector3.x;
     this.y *= vector3.y;
     this.z *= vector3.z;
+    return this;
   }
 
    /**
@@ -88,6 +93,7 @@ export default class Vector3 {
     this.x *= scalar;
     this.y *= scalar;
     this.z *= scalar;
+    return this;
   }
 
   /**
@@ -97,6 +103,7 @@ export default class Vector3 {
     this.x /= (vector3.x || 1);
     this.y /= (vector3.y || 1);
     this.z /= (vector3.z || 1);
+    return this;
   }
 
  /**
@@ -107,10 +114,12 @@ export default class Vector3 {
     this.x /= num;
     this.y /= num;
     this.z /= num;
+    return this;
   }
 
   normalize() {
     this.divideScalar(this.length || 1);
+    return this;
   }
 
   /**
